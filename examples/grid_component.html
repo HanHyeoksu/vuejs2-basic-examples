@@ -1,0 +1,66 @@
+<script src="https://unpkg.com/vue"></script>
+
+<style>
+
+</style>
+
+<div id='main'>
+  <label>Search</label>
+  <input type='text' v-model='searchQuery'>
+  <table>
+    <thead>
+      <tr>
+        <th @click='sortBy'>Name</th>
+        <th @click='sortBy'>Power</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr v-for='data in filteredDatas' :key='data.name'>
+        <td>{{data.name}}</td>
+        <td>{{data.power}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  new Vue({
+    el: '#main',
+    data: {
+      sortOrder: 1,
+      sortType: '',
+      searchQuery: '',
+      datas: [
+        { name: 'Chuck Norris', power: Infinity },
+        { name: 'Bruce Lee', power: 9000 },
+        { name: 'Jackie Chan', power: 7000 },
+        { name: 'Jet Li', power: 8000 }
+      ],
+    },
+    methods: {
+      sortBy(event) {
+        this.sortType = event.target.innerText;
+        this.sortOrder *= -1;
+      }
+    },
+    computed: {
+      filteredDatas() {
+        const searchQuery = this.searchQuery.toLowerCase();
+        const sortType = this.sortType.toLowerCase();
+        let filteredDatas = this.datas.filter(data => data.name.toLowerCase().includes(searchQuery));
+
+        if (sortType) {
+          filteredDats = filteredDatas.sort((a, b) => {
+            a = a[sortType];
+            b = b[sortType];
+
+            return (a > b ? -1 : (a < b ? 1 : 0)) * this.sortOrder;
+          });
+        }
+
+        return filteredDatas;
+      }
+    }
+  });
+</script>
