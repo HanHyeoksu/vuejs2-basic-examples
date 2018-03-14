@@ -1,0 +1,44 @@
+<style>
+  #editor, #output {
+    box-sizing: border-box;
+    display: inline-block;
+    height: 100%;
+    width: 45%;
+    padding: 10px;
+  }
+
+  #editor {
+    outline: none;
+    resize: none;
+    border-style: none;
+    border-right: 1px solid #ccc;
+    background-color: #eee;
+  }
+
+  #output {
+    vertical-align: top;
+  }
+</style>
+
+<div id='main'>
+  <textarea id='editor' v-on:input='update'></textarea>
+  <div id='output' v-html='output'></div>
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/marked@0.3.6"></script>
+<script src="https://unpkg.com/lodash@4.16.0"></script>
+
+<script>
+  new Vue({
+    el: '#main',
+    data: {
+      output: ''
+    },
+    methods: {
+      update: _.debounce(function(event) {
+        this.output = marked(event.target.value);
+      }, 500)
+    }
+  });
+</script>

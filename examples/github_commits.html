@@ -1,0 +1,103 @@
+<script src="https://unpkg.com/vue"></script>
+<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+
+<style>
+  a {
+    text-decoration: none;
+    color: #f00;
+  }
+
+  .committer, .date {
+    font-weight: bold;
+  }
+
+  #error {
+    color: #f00;
+    font-weight: bold;
+  }
+</style>
+
+<div id='main'>
+  <h1>Latest Vue.js Commits</h1>
+
+  <span v-for='branch in branches' :key='branch'>
+    <input type='radio' :id='branch' :value='branch' v-model='currentBranch'>
+    <label :for='branch'>{{branch}}</label>  
+  </span>
+
+  <p>vuejs/vue@{{currentBranch}}</p>
+    <div v-show='!error'>
+      <ul>
+        <li v-for='commitLog in commits' :key='commitLog.hash.value'>
+          <p>
+            <a :href='commitLog.hash.url'>{{commitLog.hash.value | hashFormat}}</a> - {{commitLog.message | msgFormat}} <br />
+            by <a :href='commitLog.author.url' class='committer'>{{commitLog.author.name}}</a>
+            at <span class='date'>{{commitLog.date | dateFormat}}</span>
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <div id='error' v-show='error'>
+      {{error}}
+    </div>
+</div>
+
+<script>
+  Vue.prototype.$http = axios;
+
+  new Vue({
+    el: '#main',
+    data: {
+      apiUrl: 'https://api.github.com/repos/vuejs/vue/commits?per_page=3&sha=',
+      branches: ['master', 'dev'],
+      currentBranch: 'master',
+      commits: [],
+      error: ''
+    },
+    filters: {
+      hashFormat: function(hash) {
+        return hash.slice(0, 7);
+      },
+      msgFormat: function(msg) {
+        return msg.split('\n')[0];
+      },
+      dateFormat: function(date) {
+        return date.replace(/[TZ]/g, ' ');
+      }
+    },
+    created: function() {
+      this.fetch(this.currentBranch);
+    },
+    methods: {
+      fetch: function(branch) {
+        const self = this;
+
+        this.$http.get(this.apiUrl + branch)
+        .then(res => {
+          self.commits = res.data.map(data => {
+            const {sha, url, commit: {message, author}, committer} = data;
+            return {
+              hash: {
+                value: sha,
+                url
+              },
+              message,
+              author: {
+                name: author.name,
+                url: committer.url
+              },
+              date: author.date
+            };
+          });
+        })
+        .catch(err => {
+          self.error = err.toString();
+        });
+      }
+    },
+    watch: {
+      currentBranch: 'fetch'
+    }
+  });
+</script>
