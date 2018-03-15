@@ -28,7 +28,10 @@
   new Vue({
     el: '#main',
     data: {
-      sortOrder: 1,
+      sortOrders: {
+        name: 1,
+        power: 1
+      },
       sortType: '',
       searchQuery: '',
       datas: [
@@ -40,22 +43,22 @@
     },
     methods: {
       sortBy(event) {
-        this.sortType = event.target.innerText;
-        this.sortOrder *= -1;
+        this.sortType = event.target.innerText.toLowerCase();
+        this.sortOrders[this.sortType] *= -1;
       }
     },
     computed: {
       filteredDatas() {
         const searchQuery = this.searchQuery.toLowerCase();
-        const sortType = this.sortType.toLowerCase();
-        let filteredDatas = this.datas.filter(data => data.name.toLowerCase().includes(searchQuery));
+        const sortType = this.sortType;
+        const filteredDatas = this.datas.filter(data => data.name.toLowerCase().includes(searchQuery));
 
         if (sortType) {
-          filteredDats = filteredDatas.sort((a, b) => {
+          filteredDatas.sort((a, b) => {
             a = a[sortType];
             b = b[sortType];
 
-            return (a > b ? -1 : (a < b ? 1 : 0)) * this.sortOrder;
+            return (a < b ? -1 : (a > b ? 1 : 0)) * this.sortOrders[sortType];
           });
         }
 
