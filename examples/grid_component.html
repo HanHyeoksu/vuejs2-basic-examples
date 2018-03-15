@@ -10,15 +10,13 @@
   <table>
     <thead>
       <tr>
-        <th @click='sortBy'>Name</th>
-        <th @click='sortBy'>Power</th>
+        <th v-for='col in columns' :key='col.type' @click='sortBy(col.type)'>{{col.title}}</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr v-for='data in filteredDatas' :key='data.name'>
-        <td>{{data.name}}</td>
-        <td>{{data.power}}</td>
+      <tr v-for='data in filteredDatas' :key='data.id'>
+        <td v-for='col in columns' :key=col.type>{{data[col.type]}}</td>
       </tr>
     </tbody>
   </table>
@@ -27,23 +25,32 @@
 <script>
   new Vue({
     el: '#main',
-    data: {
-      sortOrders: {
-        name: 1,
-        power: 1
-      },
-      sortType: '',
-      searchQuery: '',
-      datas: [
-        { name: 'Chuck Norris', power: Infinity },
-        { name: 'Bruce Lee', power: 9000 },
-        { name: 'Jackie Chan', power: 7000 },
-        { name: 'Jet Li', power: 8000 }
-      ],
+    data: () => {
+      const columns = [
+        {title: 'Name', type: 'name'},
+        {title: 'Power', type: 'power'}
+      ];
+      const sortOrders = columns.reduce((orders, col) => {
+        orders[col.type] = 1;
+        return orders;
+      }, {});
+
+      return {
+        columns,
+        sortOrders,
+        sortType: '',
+        searchQuery: '',
+        datas: [
+          { id: 0, name: 'Chuck Norris', power: Infinity },
+          { id: 1, name: 'Bruce Lee', power: 9000 },
+          { id: 2, name: 'Jackie Chan', power: 7000 },
+          { id: 3, name: 'Jet Li', power: 8000 }
+        ]
+      };
     },
     methods: {
-      sortBy(event) {
-        this.sortType = event.target.innerText.toLowerCase();
+      sortBy(type) {
+        this.sortType = type;
         this.sortOrders[this.sortType] *= -1;
       }
     },
