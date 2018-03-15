@@ -1,7 +1,55 @@
 <script src="https://unpkg.com/vue"></script>
 
 <style>
+  table {
+    border: 2px #0e0 solid;
+  }
 
+  th {
+    cursor: pointer;
+    background-color: #0a0;
+    width: 150px;
+    padding: 5px;
+    color: #ddd;
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }
+
+  th.active {
+    color: #fff;
+  }
+
+  th.active > i {
+    border-color: #fff;
+  }
+
+  td {
+    padding: 8px;
+    background-color: #eee;
+  }
+
+  i {
+    border: solid #ddd;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+    margin: 0 5px 0 5px;
+  }
+
+  i.asc {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+  }
+
+  i.desc {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+  }
 </style>
 
 <div id='main'>
@@ -10,7 +58,10 @@
   <table>
     <thead>
       <tr>
-        <th v-for='col in columns' :key='col.type' @click='sortBy(col.type)'>{{col.title}}</th>
+        <th v-for='col in columns'
+            :key='col.type'
+            :class='{active: sortType === col.type}'
+            @click='sortBy(col.type)'>{{col.title}}<i :class='sortOrders[col.type] === 1 ? "asc" : "desc"'></i></th>
       </tr>
     </thead>
 
