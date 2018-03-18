@@ -1,0 +1,102 @@
+<script src="https://unpkg.com/vue"></script>
+
+<style>
+  .folder {
+    font-weight: bold
+  }
+
+  li {
+    cursor: pointer;
+  }
+</style>
+
+<div id='main'>
+  <p>(You can double click on an item to turn it into a folder.)</p>
+
+  <ul>
+    <node :data="tree"></node>
+  </ul>
+</div>
+
+<script>
+  Vue.component('node', {
+    template: '\
+      <li>\
+        <span :class="{folder: isFolder()}" @click="toggle()" @dblclick="changeToFolder()">\
+          {{data.name}}\
+          <span v-show="isFolder()">\
+            [{{isOpened ? "-" : "+"}}]\
+          </span>\
+        </span>\
+        <ul v-show="isOpened">\
+          <node v-for="(child, i) in data.children" :data="child" :key="i"></node>\
+          <li v-if="isFolder()" @click="addNewNode()">+</li>\
+        </ul>\
+      </li>\
+    ',
+    props: ['data'],
+    methods: {
+      changeToFolder: function() {
+        if (!this.isFolder()) {
+          this.addNewNode();
+          this.isOpened = true;
+        }
+      },
+      isFolder: function() {
+        return (this.data.children && this.data.children.length) > 0;
+      },
+      toggle: function() {
+        this.isOpened = !this.isOpened;
+      },
+      addNewNode: function() {
+        if (!this.data.children) {
+          this.data.children = [];
+        }
+        this.data.children.push({name: 'new stuff'});
+      }
+    },
+    data: function() {
+      return {
+        isOpened: false
+      }
+    }
+  })
+
+  new Vue({
+    el: '#main',
+    data: {
+      tree: {
+        name: 'My Tree',
+        children: [
+          { name: 'hello' },
+          { name: 'wat' },
+          {
+            name: 'child folder',
+            children: [
+              {
+                name: 'child folder',
+                children: [
+                  { name: 'hello' },
+                  { name: 'wat' }
+                ]
+              },
+              { name: 'hello' },
+              { name: 'wat' },
+              {
+                name: 'child folder',
+                children: [
+                  { name: 'hello' },
+                  { name: 'wat' }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+    },
+  });
+</script>
+
+
+
+
